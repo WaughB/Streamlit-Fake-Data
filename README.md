@@ -5,6 +5,9 @@ This project lets the user create fake data based on a certain schema.
 ## How to run 
 
 ### Bare metal
+
+__Important notes__ Preferred method for now. Still working on persisting the data for Docker and docker-compose integration.  
+
 To start the Streamlit application, 
 
 ```
@@ -18,6 +21,8 @@ python run api.py
 ```
 
 ### Docker
+
+__Important notes__ Still working out the volumes to persist the data after the containers are torn down. Presently, any saved data or schema would disappear after taking down the Docker container. 
 
 To run the containerized version of Streamlit: 
 
