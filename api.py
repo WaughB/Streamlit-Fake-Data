@@ -1,18 +1,19 @@
 from flask import Flask, jsonify
 import json
+import os
 
 app = Flask(__name__)
 
 
-# Endpoint to get the generated data
 @app.route("/get_data", methods=["GET"])
 def get_data():
-    # Assuming the data is saved in a file named 'fake_data.json'
-    try:
+    # Check if the JSON file exists
+    if os.path.exists("fake_data.json"):
+        # Open and read the JSON file for each request
         with open("fake_data.json", "r") as file:
             data = json.load(file)
         return jsonify(data)
-    except FileNotFoundError:
+    else:
         return jsonify({"error": "Data not found"}), 404
 
 
