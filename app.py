@@ -2,6 +2,33 @@ import streamlit as st
 from faker import Faker
 import json
 import random
+import os
+
+# Define the directory for saving schemas
+schema_dir = "saved_schemas"
+if not os.path.exists(schema_dir):
+    os.makedirs(schema_dir)
+
+
+def save_schema(schema, schema_name):
+    filepath = os.path.join(schema_dir, f"{schema_name}.json")
+    with open(filepath, "w") as file:
+        json.dump(schema, file)
+
+
+def load_schema_names():
+    return [
+        f.split(".")[0]
+        for f in os.listdir(schema_dir)
+        if os.path.isfile(os.path.join(schema_dir, f))
+    ]
+
+
+def load_schema(schema_name):
+    filepath = os.path.join(schema_dir, f"{schema_name}.json")
+    with open(filepath, "r") as file:
+        return json.load(file)
+
 
 # List of common locales and their display names
 locales = [
@@ -92,6 +119,7 @@ field_options = {
     "license_plate": "License Plate",
 }
 
+
 # Configure the schema
 st.sidebar.header("Configure Schema")
 num_fields = st.sidebar.number_input("Number of Fields", min_value=1, value=5, step=1)
@@ -116,8 +144,27 @@ def generate_data(fake, num_entries, schema):
     return data_list
 
 
+# Schema saving functionality
+st.header("Save/Load Schema")
+schema_name = st.text_input("Schema Name")
+if st.button("Save Schema"):
+    save_schema(schema, schema_name)
+    st.success(f"Schema '{schema_name}' saved successfully.")
+
+# Schema loading functionality
+loaded_schema_name = st.selectbox("Load Schema", options=[""] + load_schema_names())
+if loaded_schema_name:
+    schema = load_schema(loaded_schema_name)
+    st.success(f"Schema '{loaded_schema_name}' loaded successfully.")
+
+
 # Generate and display fake data
 if st.button("Generate Fake Data"):
     fake = Faker(selected_locale)
     fake_data = generate_data(fake, num_entries, schema)
+
+    # Save the generated data to a file
+    with open("fake_data.json", "w") as file:
+        json.dump(fake_data, file)
+
     st.json(fake_data)
